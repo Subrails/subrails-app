@@ -1,0 +1,32 @@
+{
+  "name": "@subrails/indexer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Subrails event indexer: polls Soroban RPC for contract events and serves a read-only API.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && cp src/db/schema.sql dist/db/schema.sql",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "node --test test/*.test.ts",
+    "lint": "eslint src test",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.15.0",
+    "@stellar/stellar-sdk": "^16.2.0",
+    "@subrails/sdk": "workspace:*",
+    "hono": "^4.7.0",
+    "pg": "^8.13.0",
+    "pino": "^9.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/pg": "^8.11.0",
+    "pg-mem": "^3.0.0",
+    "typescript": "^5.9.0"
+  }
+}
