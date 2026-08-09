@@ -3,13 +3,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Header } from "@/components/Header";
+import { MandateBoard } from "@/components/MandateBoard";
 import { MerchantPanel } from "@/components/MerchantPanel";
 import { SubscriberPanel } from "@/components/SubscriberPanel";
 import type { Toast } from "@/components/SubscriberPanel";
 
 import { loadWebConfig } from "@/lib/config";
 import { shortenAddress } from "@/lib/format";
-import { policyClient } from "@/lib/sdk-clients";
+import { policyClient, tokenClient } from "@/lib/sdk-clients";
 
 const CONFIG = loadWebConfig();
 
@@ -44,6 +45,7 @@ export default function Page(): React.ReactElement {
   });
   const [currentLedger, setCurrentLedger] = useState<number | null>(null);
   const [indexerOk, setIndexerOk] = useState<boolean | null>(null);
+  const [tokenMeta, setTokenMeta] = useState<{ symbol: string; decimals: number } | null>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const toastId = useRef(0);
 
@@ -74,6 +76,31 @@ export default function Page(): React.ReactElement {
       window.clearInterval(timer);
     };
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadTokenMeta(): Promise<void> {
+      if (tokenId.trim() === "") {
+        setTokenMeta(null);
+        return;
+      }
+      try {
+        const token = tokenClient(CONFIG.sdk, tokenId.trim());
+        const [symbol, decimals] = await Promise.all([token.symbol(), token.decimals()]);
+        if (!cancelled) {
+          setTokenMeta({ symbol, decimals });
+        }
+      } catch {
+        if (!cancelled) {
+          setTokenMeta(null);
+        }
+      }
+    }
+    void loadTokenMeta();
+    return () => {
+      cancelled = true;
+    };
+  }, [tokenId]);
 
   const handleAccountDeployed = useCallback((id: string) => {
     setAccountId(id);
@@ -170,22 +197,15 @@ export default function Page(): React.ReactElement {
           />
         </div>
 
-        <section className="panel panel-violet">
-          <header className="panel-head">
-            <div>
-              <p className="panel-kicker">State and charge history from the indexer</p>
-              <h2 className="panel-title">Mandates</h2>
-            </div>
-          </header>
-          <div className="panel-body">
-            <div className="empty-state">
-              <p className="empty-state-title">Mandate board coming next</p>
-              <p className="empty-state-body">
-                The mandate board with charge history arrives in the following step.
-              </p>
-            </div>
-          </div>
-        </section>
+        <MandateBoard
+          sdk={CONFIG.sdk}
+          indexerUrl={CONFIG.indexerUrl}
+          accountId={accountId}
+          tokenDecimals={tokenMeta?.decimals ?? null}
+          tokenSymbol={tokenMeta?.symbol ?? "token"}
+          onIndexerStatusChange={setIndexerOk}
+          pushToast={pushToast}
+        />
 
         <footer className="footer">
           <p>
