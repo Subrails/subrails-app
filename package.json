@@ -1,0 +1,17 @@
+{
+  "name": "subrails-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Subrails: a recurring-authorization protocol on Stellar. TypeScript SDK, event indexer, and reference frontend.",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@11.18.0",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "build": "pnpm -r --if-present build",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "pnpm -r --if-present test",
+    "lint": "pnpm -r --if-present lint"
+  }
+}
