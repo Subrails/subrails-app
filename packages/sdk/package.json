@@ -21,7 +21,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "node --test test/",
+    "test": "node --test test/*.test.ts",
     "lint": "eslint src test"
   },
   "dependencies": {
