@@ -45,6 +45,7 @@ export default function Page(): React.ReactElement {
   });
   const [currentLedger, setCurrentLedger] = useState<number | null>(null);
   const [indexerOk, setIndexerOk] = useState<boolean | null>(null);
+  const [boardRefreshKey, setBoardRefreshKey] = useState(0);
   const [tokenMeta, setTokenMeta] = useState<{ symbol: string; decimals: number } | null>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const toastId = useRef(0);
@@ -124,13 +125,13 @@ export default function Page(): React.ReactElement {
   }, []);
 
   const handleCharged = useCallback(() => {
-    // The board polls on its own timer; this just nudges it.
-    window.setTimeout(() => setIndexerOk((ok) => ok), 0);
+    // Ask the mandate board to refresh now rather than waiting for its poll.
+    setBoardRefreshKey((key) => key + 1);
   }, []);
 
   return (
     <div className="page">
-      <Header network={CONFIG.network} indexerOk={indexerOk} currentLedger={currentLedger} />
+      <Header network={CONFIG.network} indexerOk={indexerOk} />
 
       <main className="page-inner">
         {!CONFIG.contractsDeployed ? (
@@ -203,6 +204,7 @@ export default function Page(): React.ReactElement {
           accountId={accountId}
           tokenDecimals={tokenMeta?.decimals ?? null}
           tokenSymbol={tokenMeta?.symbol ?? "token"}
+          refreshKey={boardRefreshKey}
           onIndexerStatusChange={setIndexerOk}
           pushToast={pushToast}
         />

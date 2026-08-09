@@ -7,7 +7,7 @@
 
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ChargesTable } from "./ChargesTable";
 import { Button, EmptyState, KvRow, Panel, Spinner, StatusChip } from "./ui";
@@ -26,6 +26,8 @@ export interface MandateBoardProps {
   accountId: string | null;
   tokenDecimals: number | null;
   tokenSymbol: string;
+  /** Bumping this key triggers an immediate refresh (e.g. after a charge). */
+  refreshKey: number;
   onIndexerStatusChange: (ok: boolean | null) => void;
   pushToast: (kind: "success" | "error" | "info", title: string, detail?: string) => void;
 }
@@ -78,6 +80,17 @@ export function MandateBoard(props: MandateBoardProps): React.ReactElement {
     const timer = window.setInterval(() => void refresh(), POLL_MS);
     return () => window.clearInterval(timer);
   }, [refresh]);
+
+  // A bumped refreshKey (e.g. right after a charge) triggers an immediate
+  // refresh instead of waiting for the poll timer. The ref skips the initial
+  // mount, which the effect above already covers.
+  const prevRefreshKey = useRef(props.refreshKey);
+  useEffect(() => {
+    if (prevRefreshKey.current !== props.refreshKey) {
+      prevRefreshKey.current = props.refreshKey;
+      void refresh();
+    }
+  }, [props.refreshKey, refresh]);
 
   const revoke = (mandateId: bigint) =>
     void (async () => {

@@ -116,7 +116,7 @@ export function MerchantPanel(props: MerchantPanelProps): React.ReactElement {
     props.tokenId.trim() !== "" &&
     props.latestMandateId !== null &&
     props.merchant.trim() !== "" &&
-    (props.sdk.protocol27 || props.config.policyId.length > 0);
+    props.sdk.protocol27;
 
   return (
     <Panel

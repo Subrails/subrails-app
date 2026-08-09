@@ -9,7 +9,6 @@ import type { NetworkName } from "@subrails/sdk";
 export function Header(props: {
   network: NetworkName;
   indexerOk: boolean | null;
-  currentLedger: number | null;
 }): React.ReactElement {
   const { address, connecting, connect, disconnect } = useWallet();
 
@@ -42,17 +41,17 @@ export function Header(props: {
             title="Indexer read API"
           >
             <span className="chip-dot" />
-            {props.indexerOk === true
-              ? `indexer @ ledger ${props.currentLedger === null ? "\u2026" : props.currentLedger}`
-              : props.indexerOk === false
-                ? "indexer down"
-                : "indexer \u2026"}
+            {props.indexerOk === true ? "indexer online" : props.indexerOk === false ? "indexer down" : "indexer \u2026"}
           </span>
         </div>
 
         <div className="header-wallet">
           {address === null ? (
-            <Button variant="primary" onClick={() => void connect()} loading={connecting}>
+            <Button
+              variant="primary"
+              onClick={() => void connect().catch(() => undefined)}
+              loading={connecting}
+            >
               {connecting ? "Connecting" : "Connect wallet"}
             </Button>
           ) : (
