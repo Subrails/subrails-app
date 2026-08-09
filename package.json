@@ -13,5 +13,9 @@
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "pnpm -r --if-present test",
     "lint": "pnpm -r --if-present lint"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "typescript-eslint": "^8.0.0"
   }
 }
