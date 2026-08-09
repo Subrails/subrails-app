@@ -24,10 +24,22 @@ export { TokenClient } from "./clients/token.ts";
 export {
   ClientContext,
   KeypairSigner,
+  addressScVal,
+  i128ScVal,
+  parseAddress,
+  parseEnumName,
+  parseI128,
+  parseMandate,
+  parseSymbol,
+  parseU32,
+  parseU64,
+  parseU64Vec,
   runRead,
   runWrite,
-  signAddressEntries,
   setEntryExpiration,
+  signAddressEntries,
+  u32ScVal,
+  u64ScVal,
 } from "./clients/base.ts";
 export type {
   Signer,
