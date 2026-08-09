@@ -107,11 +107,17 @@ export class Ingester {
             }
             await this.apply(decoded, q);
             processed += 1;
-            if (event.ledger > lastSeenLedger) {
-              lastSeenLedger = event.ledger;
-            }
           }
         });
+        // Advance the committed cursor to the last event ledger in the page
+        // even when nothing in it decoded. Once the loop terminates, the
+        // whole page is behind us; without this, a range containing only
+        // undecodable events would stall the cursor and every poll would
+        // re-fetch the same range. Idempotent writes make this safe.
+        const pageEnd = page.events[page.events.length - 1];
+        if (pageEnd !== undefined && pageEnd.ledger > lastSeenLedger) {
+          lastSeenLedger = pageEnd.ledger;
+        }
       }
 
       // Persist progress before the next page so a crash mid-range resumes

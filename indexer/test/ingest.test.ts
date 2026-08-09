@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { rpc } from "@stellar/stellar-sdk";
+import { rpc, xdr } from "@stellar/stellar-sdk";
 
 import type { IndexerConfig } from "../src/config.ts";
 import { Db } from "../src/db/client.ts";
@@ -211,6 +211,32 @@ test("requires a configured mandate policy id", async () => {
   });
   await assert.rejects(() => ingester.runOnce(), /MANDATE_POLICY_ID is not configured/);
   await db.close();
+});
+
+test("committed cursor advances over pages with no decodable events", async () => {
+  // An event the decoder does not recognize must not stall the committed
+  // cursor: the whole page is behind us once the loop stops, and re-fetching
+  // it on every poll would never make progress.
+  const unknown = createEvent(100);
+  unknown.topic = [xdr.ScVal.scvSymbol("future_event"), xdr.ScVal.scvU64(xdr.Uint64.fromString("1"))];
+  const { db, ingester } = await setup([unknown, createEvent(200)]);
+
+  const summary = await ingester.runOnce();
+  assert.equal(summary.processed, 1);
+  assert.equal(await db.getLastLedger(), 200n);
+});
+
+test("cursor advances even when every event in a range is undecodable", async () => {
+  const unknown = (ledger: number): rpc.Api.EventResponse => {
+    const event = createEvent(ledger);
+    event.topic = [xdr.ScVal.scvSymbol("future_event"), xdr.ScVal.scvU64(xdr.Uint64.fromString("1"))];
+    return event;
+  };
+  const { db, ingester } = await setup([unknown(100), unknown(101)]);
+
+  const summary = await ingester.runOnce();
+  assert.equal(summary.processed, 0);
+  assert.equal(await db.getLastLedger(), 101n);
 });
 
 test("paged ingestion across multiple getEvents calls", async () => {
