@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { Button, CopyButton } from "./ui";
 
 import { shortenAddress } from "@/lib/format";
@@ -30,6 +32,10 @@ export function Header(props: {
           <span className="brand-name">Subrails</span>
           <span className="brand-sub">recurring authorization on Stellar</span>
         </div>
+
+        <Link className="header-link" href="/">
+          Home
+        </Link>
 
         <div className="header-status">
           <span className={`net-chip ${props.network === "mainnet" ? "net-main" : "net-test"}`}>

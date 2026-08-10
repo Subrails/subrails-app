@@ -1,0 +1,652 @@
+/* ==========================================================================
+   Subrails marketing landing page.
+   Ported from subrails-mockup.html. Light editorial serif design with a
+   dark-mode toggle. Every selector is scoped under .landing so these rules
+   never leak into the /demo reference app.
+   ========================================================================== */
+
+:root {
+  --paper: #fcfcfa;
+  --ink: #14150f;
+  --ink-soft: #4a4c42;
+  --ink-faint: #8a8c80;
+  --rule: #e2e2da;
+  --field: #f4f4ee;
+  --accent: #1b4d3e;
+  --accent-soft: #2c6b57;
+  --flag: #a6431f;
+  --bg: var(--paper);
+  --fg: var(--ink);
+}
+
+[data-theme="dark"] {
+  --paper: #0e0f0d;
+  --ink: #ecede4;
+  --ink-soft: #a6a89c;
+  --ink-faint: #6c6e62;
+  --rule: #26271f;
+  --field: #17180f;
+  --accent: #7fb79e;
+  --accent-soft: #a8d3c0;
+  --flag: #e0784e;
+  --bg: var(--paper);
+  --fg: var(--ink);
+}
+
+html:has(.landing) {
+  scroll-behavior: smooth;
+  color-scheme: light;
+}
+
+html:has(.landing)[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* The demo's global body styles (dark gradient + grid overlay) stay active on
+   this route; neutralize them so they never show through the light page. */
+html:has(.landing) body {
+  background: var(--bg);
+}
+
+html:has(.landing) body::before {
+  content: none;
+}
+
+.landing {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 18px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+.landing a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.landing .wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+/* header */
+
+.landing header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 40px;
+  max-width: 1080px;
+  margin: 0 auto;
+  border-bottom: 1px solid var(--rule);
+}
+
+.landing .brand {
+  display: block;
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+  text-transform: lowercase;
+}
+
+.landing .brand::after {
+  content: ".";
+  color: var(--accent);
+}
+
+.landing nav {
+  display: flex;
+  gap: 34px;
+  align-items: center;
+}
+
+.landing nav a {
+  font-family: "Archivo", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  text-decoration: none;
+  letter-spacing: 0.01em;
+}
+
+.landing nav a:hover {
+  color: var(--fg);
+}
+
+.landing .toggle {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  background: none;
+  border: 1px solid var(--rule);
+  color: var(--ink-soft);
+  padding: 6px 12px;
+  border-radius: 2px;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+}
+
+.landing .toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* hero */
+
+.landing .hero {
+  max-width: none;
+  margin: 0 auto;
+  text-align: left;
+  padding: 96px 0 72px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.landing .eyebrow {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 34px;
+}
+
+.landing h1 {
+  font-family: "Fraunces", serif;
+  font-weight: 400;
+  font-size: clamp(44px, 7vw, 82px);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  margin-bottom: 32px;
+  max-width: 15ch;
+}
+
+.landing h1 em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.landing .lede {
+  font-family: "Archivo", sans-serif;
+  font-size: 20px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  max-width: 52ch;
+  font-weight: 400;
+}
+
+.landing .hero-actions {
+  margin-top: 44px;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+.landing .btn {
+  display: inline-block;
+  border: none;
+  box-shadow: none;
+  font-family: "Archivo", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 13px 24px;
+  border-radius: 2px;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  transition: all 0.2s;
+}
+
+.landing .btn-primary {
+  background: var(--accent);
+  color: var(--paper);
+}
+
+[data-theme="dark"] .landing .btn-primary {
+  color: var(--ink);
+}
+
+.landing .btn-primary:hover {
+  background: var(--accent-soft);
+}
+
+.landing .btn-ghost {
+  color: var(--fg);
+  border: 1px solid var(--rule);
+}
+
+.landing .btn-ghost:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* mandate strip: the signature element */
+
+.landing .strip-section {
+  padding: 68px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.landing .strip-label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 26px;
+}
+
+.landing .mandate {
+  border: 1px solid var(--ink);
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--field);
+}
+
+.landing .mandate-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0;
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--bg);
+}
+
+.landing .mandate-id {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+
+.landing .mandate-status {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.landing .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: inline-block;
+}
+
+.landing .mandate-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.landing .cell {
+  padding: 26px 28px;
+  border-right: 1px solid var(--rule);
+}
+
+.landing .cell:last-child {
+  border-right: none;
+}
+
+.landing .cell-label {
+  font-family: "Archivo", sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 12px;
+}
+
+.landing .cell-value {
+  font-family: "Fraunces", serif;
+  font-size: 34px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.landing .cell-value small {
+  font-size: 15px;
+  color: var(--ink-soft);
+  font-weight: 400;
+}
+
+.landing .mandate-foot {
+  padding: 16px 28px;
+  border-top: 1px solid var(--rule);
+  background: var(--bg);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  color: var(--ink-faint);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.landing .mandate-foot span {
+  color: var(--ink-soft);
+}
+
+/* how it works */
+
+.landing .how {
+  padding: 88px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.landing .how h2,
+.landing .compare h2,
+.landing .cta-band h2 {
+  font-family: "Fraunces", serif;
+  font-weight: 400;
+  font-size: clamp(32px, 4.5vw, 46px);
+  letter-spacing: -0.02em;
+  margin-bottom: 14px;
+}
+
+.landing .section-note {
+  font-family: "Archivo", sans-serif;
+  font-size: 17px;
+  color: var(--ink-soft);
+  max-width: 56ch;
+  margin-bottom: 56px;
+}
+
+.landing .steps {
+  display: grid;
+  gap: 0;
+}
+
+.landing .step {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 28px;
+  padding: 30px 0;
+  border: none;
+  border-top: 1px solid var(--rule);
+  border-radius: 0;
+  background: none;
+  align-items: start;
+}
+
+.landing .step-body {
+  display: block;
+  gap: 0;
+}
+
+.landing .step:last-child {
+  border-bottom: 1px solid var(--rule);
+}
+
+.landing .step-num {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 14px;
+  color: var(--accent);
+  padding-top: 6px;
+}
+
+.landing .step-body h3 {
+  font-family: "Archivo", sans-serif;
+  font-size: 19px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.landing .step-body p {
+  font-family: "Archivo", sans-serif;
+  font-size: 16px;
+  color: var(--ink-soft);
+  max-width: 62ch;
+  line-height: 1.6;
+}
+
+.landing .step-body code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13.5px;
+  background: var(--field);
+  padding: 2px 6px;
+  border-radius: 2px;
+  color: var(--accent-soft);
+}
+
+/* compare */
+
+.landing .compare {
+  padding: 88px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.landing .compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.landing .col {
+  padding: 36px 32px;
+}
+
+.landing .col:first-child {
+  border-right: 1px solid var(--rule);
+  background: var(--field);
+}
+
+.landing .col h4 {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 0;
+  margin-bottom: 22px;
+  color: var(--ink-faint);
+}
+
+.landing .col ul {
+  margin: 0;
+  padding: 0;
+}
+
+.landing .col ul {
+  list-style: none;
+}
+
+.landing .col li {
+  font-family: "Archivo", sans-serif;
+  font-size: 16px;
+  padding: 11px 0;
+  padding-left: 26px;
+  position: relative;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  border-bottom: 1px solid var(--rule);
+}
+
+.landing .col li:last-child {
+  border-bottom: none;
+}
+
+.landing .col li::before {
+  position: absolute;
+  left: 0;
+  top: 11px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 14px;
+}
+
+.landing .col-old li::before {
+  content: "\00D7";
+  color: var(--flag);
+}
+
+.landing .col-new li {
+  color: var(--fg);
+}
+
+.landing .col-new li::before {
+  content: "\2713";
+  color: var(--accent);
+}
+
+/* cta band */
+
+.landing .cta-band {
+  padding: 96px 0;
+  text-align: center;
+}
+
+.landing .cta-band p {
+  font-family: "Archivo", sans-serif;
+  font-size: 18px;
+  color: var(--ink-soft);
+  max-width: 46ch;
+  margin: 0 auto 36px;
+}
+
+.landing .quickstart {
+  max-width: 620px;
+  margin: 40px auto 0;
+  text-align: left;
+  border: 1px solid var(--ink);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.landing .qs-bar {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 9px 16px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  display: flex;
+  justify-content: space-between;
+}
+
+[data-theme="dark"] .landing .qs-bar {
+  color: var(--ink);
+  background: var(--accent);
+}
+
+.landing .qs-body {
+  background: var(--field);
+  padding: 22px 20px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13.5px;
+  line-height: 2;
+}
+
+.landing .qs-body .c {
+  color: var(--ink-faint);
+}
+
+.landing .qs-body .g {
+  color: var(--accent-soft);
+}
+
+/* footer */
+
+.landing footer {
+  border-top: 1px solid var(--rule);
+  padding: 44px 0 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.landing .foot-brand {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.landing .foot-meta {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  color: var(--ink-faint);
+  max-width: 42ch;
+  line-height: 1.7;
+}
+
+.landing .foot-links {
+  display: flex;
+  gap: 26px;
+}
+
+.landing .foot-links a {
+  font-family: "Archivo", sans-serif;
+  font-size: 14px;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+
+.landing .foot-links a:hover {
+  color: var(--accent);
+}
+
+/* responsive */
+
+@media (max-width: 720px) {
+  .landing .wrap {
+    padding: 0 22px;
+  }
+
+  .landing header {
+    padding: 20px 22px;
+  }
+
+  .landing nav a:not(.toggle) {
+    display: none;
+  }
+
+  .landing .mandate-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .landing .cell {
+    border-right: none;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .landing .compare-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .landing .col:first-child {
+    border-right: none;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .landing .step {
+    grid-template-columns: 40px 1fr;
+    gap: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing,
+  .landing * {
+    transition: none !important;
+  }
+
+  html:has(.landing) {
+    scroll-behavior: auto;
+  }
+}

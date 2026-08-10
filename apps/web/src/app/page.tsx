@@ -1,233 +1,229 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
-import { Header } from "@/components/Header";
-import { MandateBoard } from "@/components/MandateBoard";
-import { MerchantPanel } from "@/components/MerchantPanel";
-import { SubscriberPanel } from "@/components/SubscriberPanel";
-import type { Toast } from "@/components/SubscriberPanel";
+import Link from "next/link";
 
-import { loadWebConfig } from "@/lib/config";
-import { shortenAddress } from "@/lib/format";
-import { policyClient, tokenClient } from "@/lib/sdk-clients";
+import "./landing.css";
 
-const CONFIG = loadWebConfig();
+type Theme = "light" | "dark";
 
-const LS_ACCOUNT = "subrails.demo.account";
-const LS_TOKEN = "subrails.demo.token";
-const LS_MERCHANT = "subrails.demo.merchant";
-const LS_MANDATE = "subrails.demo.mandate";
-
-function readStored(key: string): string | null {
-  try {
-    return window.localStorage.getItem(key);
-  } catch {
-    return null;
-  }
-}
-
-function writeStored(key: string, value: string): void {
-  try {
-    window.localStorage.setItem(key, value);
-  } catch {
-    // Storage can be unavailable (private mode); the session still works.
-  }
-}
-
-export default function Page(): React.ReactElement {
-  const [accountId, setAccountId] = useState<string | null>(() => readStored(LS_ACCOUNT));
-  const [tokenId, setTokenId] = useState<string>(() => readStored(LS_TOKEN) ?? "");
-  const [merchant, setMerchant] = useState<string>(() => readStored(LS_MERCHANT) ?? "");
-  const [latestMandateId, setLatestMandateId] = useState<bigint | null>(() => {
-    const raw = readStored(LS_MANDATE);
-    return raw === null ? null : BigInt(raw);
-  });
-  const [currentLedger, setCurrentLedger] = useState<number | null>(null);
-  const [indexerOk, setIndexerOk] = useState<boolean | null>(null);
-  const [boardRefreshKey, setBoardRefreshKey] = useState(0);
-  const [tokenMeta, setTokenMeta] = useState<{ symbol: string; decimals: number } | null>(null);
-  const [toasts, setToasts] = useState<Toast[]>([]);
-  const toastId = useRef(0);
-
-  const pushToast = useCallback((kind: Toast["kind"], title: string, detail?: string) => {
-    const id = ++toastId.current;
-    setToasts((current) => [...current, { id, kind, title, detail }]);
-    window.setTimeout(() => {
-      setToasts((current) => current.filter((toast) => toast.id !== id));
-    }, 7000);
-  }, []);
+/**
+ * Marketing landing page for Subrails, ported from subrails-mockup.html.
+ * The on-chain reference app lives at /demo.
+ */
+export default function LandingPage(): React.ReactElement {
+  const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
-    let cancelled = false;
-    async function pollLedger(): Promise<void> {
-      try {
-        const ledger = await policyClient(CONFIG.sdk).ledger();
-        if (!cancelled) {
-          setCurrentLedger(ledger);
-        }
-      } catch {
-        // The ledger read is best effort.
-      }
-    }
-    void pollLedger();
-    const timer = window.setInterval(() => void pollLedger(), 15_000);
-    return () => {
-      cancelled = true;
-      window.clearInterval(timer);
-    };
-  }, []);
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
 
-  useEffect(() => {
-    let cancelled = false;
-    async function loadTokenMeta(): Promise<void> {
-      if (tokenId.trim() === "") {
-        setTokenMeta(null);
-        return;
-      }
-      try {
-        const token = tokenClient(CONFIG.sdk, tokenId.trim());
-        const [symbol, decimals] = await Promise.all([token.symbol(), token.decimals()]);
-        if (!cancelled) {
-          setTokenMeta({ symbol, decimals });
-        }
-      } catch {
-        if (!cancelled) {
-          setTokenMeta(null);
-        }
-      }
-    }
-    void loadTokenMeta();
-    return () => {
-      cancelled = true;
-    };
-  }, [tokenId]);
-
-  const handleAccountDeployed = useCallback((id: string) => {
-    setAccountId(id);
-    writeStored(LS_ACCOUNT, id);
-    pushToast("info", "Smart account saved", "The account id is kept in this browser for the session.");
-  }, [pushToast]);
-
-  const handleTokenIdChange = useCallback((value: string) => {
-    setTokenId(value);
-    writeStored(LS_TOKEN, value);
-  }, []);
-
-  const handleMerchantChange = useCallback((value: string) => {
-    setMerchant(value);
-    writeStored(LS_MERCHANT, value);
-  }, []);
-
-  const handleMandateCreated = useCallback((mandateId: bigint) => {
-    setLatestMandateId(mandateId);
-    writeStored(LS_MANDATE, mandateId.toString());
-  }, []);
-
-  const handleCharged = useCallback(() => {
-    // Ask the mandate board to refresh now rather than waiting for its poll.
-    setBoardRefreshKey((key) => key + 1);
-  }, []);
+  const toggleTheme = (): void => {
+    setTheme((current) => (current === "light" ? "dark" : "light"));
+  };
 
   return (
-    <div className="page">
-      <Header network={CONFIG.network} indexerOk={indexerOk} />
+    <div className="landing">
+      <header>
+        <div className="brand">subrails</div>
+        <nav>
+          <a href="#how">How it works</a>
+          <a href="#compare">Why</a>
+          <a href="#start">Docs</a>
+          <button type="button" className="toggle" onClick={toggleTheme}>
+            {theme === "light" ? "DARK" : "LIGHT"}
+          </button>
+        </nav>
+      </header>
 
-      <main className="page-inner">
-        {!CONFIG.contractsDeployed ? (
-          <div className="setup-banner">
-            <span className="setup-banner-title">Contracts not deployed yet</span>
-            <p>
-              The on-chain flow needs MANDATE_POLICY_ID, MANDATE_REGISTRY_ID, and the subrails-account wasm hash. Fill
-              them in after deployment, following .env.example at the workspace root. Wallet and indexer status still
-              work above.
-            </p>
-          </div>
-        ) : null}
-
-        <section className="hero">
-          <h1 className="hero-title">
-            Recurring payments with hard on-chain limits
+      <section className="hero">
+        <div className="wrap">
+          <div className="eyebrow">Recurring authorization on Stellar</div>
+          <h1>
+            Crypto has no <em>direct debit.</em> Subrails is the missing rail.
           </h1>
-          <p className="hero-sub">
-            A subscriber authorizes a merchant to pull charges from their smart account: a max amount per charge, a
-            minimum interval, and an expiry. The mandate-policy contract enforces every limit during the charge
-            authorization, so a merchant can collect without asking, and never beyond the cap.
+          <p className="lede">
+            A subscriber authorizes a merchant once, on chain, with hard limits: a maximum per charge, a fixed
+            interval, an expiry. The merchant pulls each payment when it is due. Nothing lets them charge more, charge
+            early, or charge after it ends.
           </p>
-          <div className="hero-stats">
-            <div className="stat">
-              <span className="stat-value">{CONFIG.sdk.network}</span>
-              <span className="stat-label">network</span>
-            </div>
-            <div className="stat">
-              <span className="stat-value">{CONFIG.sdk.protocol27 ? "CAP-71" : "legacy"}</span>
-              <span className="stat-label">authorization</span>
-            </div>
-            <div className="stat">
-              <span className="stat-value">{currentLedger === null ? "\u2013" : currentLedger}</span>
-              <span className="stat-label">current ledger</span>
-            </div>
+          <div className="hero-actions">
+            <a href="#start" className="btn btn-primary">
+              Read the quickstart
+            </a>
+            <a href="#how" className="btn btn-ghost">
+              See the mechanism
+            </a>
           </div>
-        </section>
-
-        <div className="role-grid">
-          <SubscriberPanel
-            config={CONFIG}
-            sdk={CONFIG.sdk}
-            accountId={accountId}
-            currentLedger={currentLedger}
-            tokenId={tokenId}
-            merchant={merchant}
-            latestMandateId={latestMandateId}
-            onAccountDeployed={handleAccountDeployed}
-            onTokenIdChange={handleTokenIdChange}
-            onMandateCreated={handleMandateCreated}
-            pushToast={pushToast}
-          />
-          <MerchantPanel
-            config={CONFIG}
-            sdk={CONFIG.sdk}
-            accountId={accountId}
-            currentLedger={currentLedger}
-            tokenId={tokenId}
-            merchant={merchant}
-            latestMandateId={latestMandateId}
-            onMerchantChange={handleMerchantChange}
-            onCharged={handleCharged}
-            pushToast={pushToast}
-          />
         </div>
+      </section>
 
-        <MandateBoard
-          sdk={CONFIG.sdk}
-          indexerUrl={CONFIG.indexerUrl}
-          accountId={accountId}
-          tokenDecimals={tokenMeta?.decimals ?? null}
-          tokenSymbol={tokenMeta?.symbol ?? "token"}
-          refreshKey={boardRefreshKey}
-          onIndexerStatusChange={setIndexerOk}
-          pushToast={pushToast}
-        />
-
-        <footer className="footer">
-          <p>
-            Subrails is a reference implementation of a recurring-authorization protocol on Stellar. Writes go through
-            the SDK and your wallet; reads come from the indexer read API at {CONFIG.indexerUrl}.
-          </p>
-          <p className="muted small">
-            {accountId === null ? "" : `Smart account: ${shortenAddress(accountId, 10, 6)}`}
-          </p>
-        </footer>
-      </main>
-
-      <div className="toast-stack" aria-live="polite">
-        {toasts.map((toast) => (
-          <div key={toast.id} className={`toast toast-${toast.kind}`}>
-            <p className="toast-title">{toast.title}</p>
-            {toast.detail !== undefined ? <p className="toast-detail mono">{toast.detail}</p> : null}
+      <section className="strip-section">
+        <div className="wrap">
+          <div className="strip-label">One mandate, as it lives on chain</div>
+          <div className="mandate">
+            <div className="mandate-head">
+              <span className="mandate-id">mandate #0431 · account G7QF…3JHM → merchant GBRK…9WPA</span>
+              <span className="mandate-status">
+                <span className="dot" />
+                Active
+              </span>
+            </div>
+            <div className="mandate-grid">
+              <div className="cell">
+                <div className="cell-label">Cap per charge</div>
+                <div className="cell-value">
+                  10.00 <small>USDC</small>
+                </div>
+              </div>
+              <div className="cell">
+                <div className="cell-label">Interval</div>
+                <div className="cell-value">
+                  30 <small>days</small>
+                </div>
+              </div>
+              <div className="cell">
+                <div className="cell-label">Expires</div>
+                <div className="cell-value">
+                  12 <small>charges left</small>
+                </div>
+              </div>
+            </div>
+            <div className="mandate-foot">
+              <span>next charge valid at ledger 58,204,119</span>
+              <span>revocable by either party, any time</span>
+            </div>
           </div>
-        ))}
-      </div>
+        </div>
+      </section>
+
+      <section className="how" id="how">
+        <div className="wrap">
+          <h2>How a charge is authorized</h2>
+          <p className="section-note">
+            The subscriber never hands over a key and never leaves a standing allowance exposed. The rules live inside
+            a delegated signer, enforced by the network on every pull.
+          </p>
+          <div className="steps">
+            <div className="step">
+              <div className="step-num">01</div>
+              <div className="step-body">
+                <h3>The subscriber sets the terms</h3>
+                <p>
+                  They create a mandate naming one merchant, one token, a cap, an interval, and an expiry. It is
+                  stored on chain by the <code>mandate-policy</code> contract and registered to their smart account.
+                </p>
+              </div>
+            </div>
+            <div className="step">
+              <div className="step-num">02</div>
+              <div className="step-body">
+                <h3>The merchant submits a charge when it is due</h3>
+                <p>
+                  The transaction moves the exact amount from the subscriber&apos;s account. Authorization is not an
+                  inline signature. The account delegates the decision to the policy contract.
+                </p>
+              </div>
+            </div>
+            <div className="step">
+              <div className="step-num">03</div>
+              <div className="step-body">
+                <h3>The policy checks every rule, then answers</h3>
+                <p>
+                  Inside <code>__check_auth</code>, the policy verifies the token, the merchant, the amount against
+                  the cap, the interval since the last charge, and the expiry. Any failure rejects the whole
+                  transaction. On success it advances the next valid ledger and lets the transfer settle.
+                </p>
+              </div>
+            </div>
+            <div className="step">
+              <div className="step-num">04</div>
+              <div className="step-body">
+                <h3>Either party can revoke</h3>
+                <p>
+                  The subscriber or the merchant can end the mandate. After that, no further charge authorizes. There
+                  is no window where a cancelled subscription keeps drawing funds.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="compare" id="compare">
+        <div className="wrap">
+          <h2>What this replaces</h2>
+          <p className="section-note">
+            The ways recurring payment is done on chain today, and what changes when the limits are enforced by the
+            protocol instead of by trust.
+          </p>
+          <div className="compare-grid">
+            <div className="col col-old">
+              <h4>Without Subrails</h4>
+              <ul>
+                <li>Sign every single payment by hand, forever</li>
+                <li>Or grant a token allowance that a spender can drain</li>
+                <li>Or hand custody of keys to a third party</li>
+                <li>Cancellation depends on the merchant honoring it</li>
+              </ul>
+            </div>
+            <div className="col col-new">
+              <h4>With Subrails</h4>
+              <ul>
+                <li>Authorize once, with limits fixed on chain</li>
+                <li>The cap is enforced per charge, not left open</li>
+                <li>No key custody and no exposed allowance</li>
+                <li>Revocation is enforced by the network, not a promise</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="cta-band" id="start">
+        <div className="wrap">
+          <h2>Built on Protocol 27 delegation</h2>
+          <p>
+            Subrails is an open protocol. Two repositories: the Soroban contracts and the TypeScript SDK with a
+            reference app. Apache licensed.
+          </p>
+          <Link href="/demo" className="btn btn-primary">
+            Open the reference app
+          </Link>
+          <div className="quickstart">
+            <div className="qs-bar">
+              <span>quickstart</span>
+              <span>testnet</span>
+            </div>
+            <div className="qs-body">
+              <span className="c"># install the sdk</span>
+              <br />
+              npm add <span className="g">@subrails/sdk</span>
+              <br />
+              <br />
+              <span className="c"># create a mandate: cap, interval, expiry</span>
+              <br />
+              subrails.<span className="g">createMandate</span>({"{ merchant, token, cap, interval, expiry }"})
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer className="wrap">
+        <div>
+          <div className="foot-brand">subrails</div>
+          <p className="foot-meta">
+            Recurring authorization for Stellar. Not audited. Use on testnet until a formal review is published.
+          </p>
+        </div>
+        <div className="foot-links">
+          <a href="#">Contracts</a>
+          <a href="#">SDK</a>
+          <a href="#">Docs</a>
+          <a href="#">GitHub</a>
+        </div>
+      </footer>
     </div>
   );
 }
