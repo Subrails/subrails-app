@@ -1,4 +1,6 @@
-<!-- TODO: add a logo or banner image (for example .github/logo.svg) and reference it here. -->
+<p align="center">
+  <img src=".github/banner.svg" alt="Subrails" width="600">
+</p>
 
 # Subrails
 
