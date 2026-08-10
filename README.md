@@ -7,6 +7,8 @@ Application layer: SDK, indexer, and reference app.
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![CI](https://github.com/Subrails/subrails-app/actions/workflows/ci.yml/badge.svg)](https://github.com/Subrails/subrails-app/actions/workflows/ci.yml)
 
+[Documentation](https://subrails-docs.vercel.app) | [Live demo](https://subrails-web-three.vercel.app/demo)
+
 Recurring payments have no direct-debit equivalent on chain: a subscriber must
 either sign every payment by hand, leave an open token allowance, or hand
 custody of keys to a third party. Subrails fixes this with a delegated-signer
