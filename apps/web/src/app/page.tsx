@@ -92,7 +92,7 @@ export default function LandingPage(): React.ReactElement {
             </div>
             <div className="mandate-foot">
               <span>next charge valid at ledger 58,204,119</span>
-              <span>revocable by either party, any time</span>
+              <span>revocable by the subscriber, any time</span>
             </div>
           </div>
         </div>
