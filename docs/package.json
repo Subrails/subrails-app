@@ -1,0 +1,15 @@
+{
+  "name": "@subrails/docs",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Subrails documentation site: a standalone static site, Markdown content rendered by a zero-dependency Node script.",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs",
+    "start": "node scripts/serve.mjs"
+  }
+}

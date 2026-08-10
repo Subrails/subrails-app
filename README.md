@@ -50,7 +50,10 @@ The contracts backing the live demo are deployed on Stellar testnet; see
 - `indexer`: the event indexer. Polls Soroban RPC for contract events,
   stores them in Postgres, and serves a read-only HTTP API
   (`GET /health`, `GET /mandates`, `GET /mandates/:id`).
-- `docs`: documentation site placeholder. <!-- TODO: link the Phase 11 docs site here once it exists. -->
+- `docs`: the documentation site. A standalone static site (Markdown
+  content rendered by a zero-dependency Node script) covering protocol
+  mechanics, contract reference, end-user guides, and developer reference.
+  It deploys independently of the web app.
 
 The contracts themselves form three layers in dependency order: `mandate-policy`
 (the authorization rules), `subrails-account` (the smart account that delegates
