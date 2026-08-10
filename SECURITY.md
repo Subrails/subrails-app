@@ -11,10 +11,10 @@ sibling `subrails-contract` repository and carry the same status.
 
 ## Reporting a vulnerability
 
-Please report vulnerabilities privately, not in a public issue. Two options:
+Do not open a public GitHub issue for a security vulnerability. Instead:
 
-1. Email <!-- TODO: add a security contact email, for example security@example.com -->.
-2. Open a GitHub security advisory from the repository's Security tab.
+1. Use GitHub's private vulnerability reporting for this repository (Security tab, "Report a vulnerability"), if it is enabled.
+2. If it is not enabled, reach out to the maintainer, [@Hollujay](https://github.com/Hollujay), directly through GitHub rather than filing a public issue.
 
 Include, when you have it:
 

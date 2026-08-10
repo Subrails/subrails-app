@@ -170,7 +170,7 @@ The contracts are deployed and verified on Stellar testnet:
    amount against the cap, the interval since the last charge, and the expiry.
    Any failure rejects the whole transaction. On success it advances the next
    valid ledger and lets the transfer settle.
-4. Either party can revoke. After revocation no further charge authorizes.
+4. The subscriber can revoke. After revocation no further charge authorizes.
 
 ## Contributing
 
@@ -185,7 +185,7 @@ workflow, and how to propose a change.
 
 | Role | Contact |
 | --- | --- |
-| Maintainer | <!-- TODO: add the maintainer's GitHub handle or email --> |
+| Maintainer | [@Hollujay](https://github.com/Hollujay) |
 
 ## Contributors
 
