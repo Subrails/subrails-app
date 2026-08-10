@@ -147,54 +147,6 @@ create_issue \
   "type: enhancement,complexity: medium" \
   "$BODY"
 
-BODY=$(cat <<'EOF'
-## Summary
-
-The `docs/` directory is an empty placeholder and the landing page links
-("Docs" in the nav, footer links) point at `href="#"`. Once the Phase 11 docs
-site exists, publish it and wire the links to real URLs so users can reach the
-docs and the contract repo.
-
-## Acceptance Criteria
-
-- [ ] A docs site exists and is published (or a deploy target is chosen).
-- [ ] The landing page "Docs" link points at the docs site.
-- [ ] Footer links (Contracts, SDK, Docs, GitHub) point at real destinations.
-- [ ] The README links to the docs site instead of the placeholder.
-
-## Tech Stack
-
-Next.js 16, markdown docs (or the chosen docs tool).
-EOF
-)
-create_issue \
-  "docs(web): publish the docs site and point landing page links at it" \
-  "type: docs,complexity: medium" \
-  "$BODY"
-
-BODY=$(cat <<'EOF'
-## Summary
-
-The landing footer in `apps/web/src/app/page.tsx` renders four links
-(Contracts, SDK, Docs, GitHub) that all point at `href="#"`. Replace them with
-real targets once they exist: the contract repo, the SDK package, the docs
-site, and the GitHub org.
-
-## Acceptance Criteria
-
-- [ ] Every footer link points at a real URL.
-- [ ] Links open in a new tab where they point off-site.
-- [ ] No `href="#"` placeholders remain on the landing page.
-
-## Tech Stack
-
-Next.js 16, React 19.
-EOF
-)
-create_issue \
-  "chore(web): replace placeholder '#' links in the landing footer" \
-  "type: chore,complexity: easy" \
-  "$BODY"
 
 BODY=$(cat <<'EOF'
 ## Summary
