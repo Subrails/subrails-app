@@ -218,10 +218,10 @@ export default function LandingPage(): React.ReactElement {
           </p>
         </div>
         <div className="foot-links">
-          <a href="#">Contracts</a>
-          <a href="#">SDK</a>
-          <a href="#">Docs</a>
-          <a href="#">GitHub</a>
+          <a href="https://github.com/Subrails/subrails-contract">Contracts</a>
+          <a href="https://github.com/Subrails/subrails-app/tree/main/packages/sdk">SDK</a>
+          <a href="https://subrails-docs.vercel.app">Docs</a>
+          <a href="https://github.com/Subrails">GitHub</a>
         </div>
       </footer>
     </div>
